@@ -1,3 +1,4 @@
+import React from "react";
 import TextInput from "../components/TextInput";
 import ResultCard from "../components/ResultCard";
 import Loader from "../components/Loader";
@@ -12,7 +13,7 @@ export default function Home() {
       <div style={{ marginBottom: 40 }}>
         <h1 className="title">ModeraAI</h1>
         <p className="subtitle">
-          Auditoria e moderação de conteúdo com IA multimodal
+          
         </p>
       </div>
 

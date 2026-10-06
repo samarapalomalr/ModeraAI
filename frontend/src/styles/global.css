@@ -8,11 +8,11 @@
   --text: #1e293b;
   --muted: #64748b;
 
-  /* Azul Principal (botões e elementos primários) */
+  /* Azul Principal */
   --primary: #3b82f6; 
   --primary-glow: rgba(59, 130, 246, 0.25);
   
-  /* Azul Destaque/Acento (detalhes e hovers) */
+  /* Azul Destaque/Acento */
   --secondary: #2563eb;
   --secondary-glow: rgba(37, 99, 235, 0.2);
 }
@@ -21,8 +21,15 @@
   box-sizing: border-box;
 }
 
-body {
+/* 🟢 CORREÇÃO AQUI: Garante preenchimento total da tela */
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+}
+
+body {
   font-family: 'Inter', sans-serif;
   background: var(--bg);
   background-attachment: fixed;
