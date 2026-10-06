@@ -2,11 +2,12 @@
 
 Trabalho prático desenvolvido para a disciplina de **Programação Web** do curso de Ciência da Computação da **Universidade Federal de Ouro Preto (UFOP)**.
 
-### 👥 Integrantes do Grupo 
-- Ciro 
+### 👥 Integrantes do Grupo
+
+- Ciro
 - Estefanio
-- Joao 
-- Samara 
+- Joao
+- Samara
 
 ---
 
@@ -34,8 +35,6 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 
 `Frontend (React - Vercel)` ➔ `Backend (FastAPI - Render)` ➔ `API de IA (Google Gemini)` ➔ `Coleta de dados (Apify)`
 
----
-
 ### 🔄 Fluxo da Aplicação
 
 1. O usuário insere a URL de um post do Instagram no frontend.
@@ -51,78 +50,149 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 ## ⚙️ Tecnologias Utilizadas
 
 ### Frontend
+
 - React
 - Vite
 - Axios
 - Vercel (deploy)
+- Docker (ambiente de desenvolvimento)
 
 ### Backend
+
 - Python
 - FastAPI
 - Render (deploy)
 
 ### Inteligência Artificial
+
 - Google Gemini 2.5 Flash
 
 ### Coleta de Dados
+
 - Apify
 
 ---
 
-## 🐳 Rodando o frontend com Docker (recomendado)
+## 🌿 Branch `feat/docker`
 
-Garante o mesmo ambiente para todos os devs. Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (ou Docker Engine com Compose v2) aberto e rodando.
+> Esta seção descreve a branch `feat/docker` e pode ser removida do README depois que o Pull Request for aceito na `main`.
+
+### Objetivo
+
+Padronizar o ambiente de desenvolvimento do frontend para que **todos os devs rodem o projeto exatamente da mesma forma**, independentemente do sistema operacional ou da versão de Node instalada na máquina.
+
+### O que mudou
+
+| Arquivo                  | Mudança                                                                                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `docker-compose.yml`     | **Novo.** Sobe o frontend na porta `5173`, com o código montado por volume (hot reload) e o `node_modules` guardado em um volume do Docker.            |
+| `frontend/Dockerfile`    | **Novo.** Imagem `node:20-alpine`. Ao subir, executa `npm install` e depois inicia o Vite com `--host 0.0.0.0`.                                        |
+| `frontend/.dockerignore` | **Novo.** Evita enviar `node_modules`, `dist` e `.env` para o contexto de build.                                                                       |
+| `.gitignore`             | Agora ignora `node_modules/`, `dist/`, `.env`, `backend/.env` e arquivos temporários de Python.                                                        |
+| `frontend/node_modules`  | **Removido do versionamento** (cerca de 5 mil arquivos que estavam commitados). A pasta continua existindo localmente, mas o git não a acompanha mais. |
+| `README.md`              | Documentação de como rodar com Docker.                                                                                                                 |
+
+### O que **não** mudou
+
+- Nenhum código do frontend (`src/`, `package.json`, `vite.config.js`) foi alterado.
+- O backend **ainda não está no Docker**. Ele continua sendo executado separadamente e precisa estar em `http://localhost:8000`, que é a URL usada em `frontend/src/services/api.js`.
+
+### Como testar esta branch (para quem vai revisar o PR)
+
+O `git clone` baixa todas as branches, mas deixa ativa só a branch padrão (`main`). Enquanto o PR não for aceito, a `main` **não tem** o `docker-compose.yml`, então é preciso entrar na `feat/docker`. Escolha o caso que se aplica:
+
+**Ainda não clonou o projeto: clone já na branch**
+
+```bash
+git clone -b feat/docker https://github.com/samarapalomalr/ModeraAI.git
+cd ModeraAI
+docker compose up --build
+```
+
+**Já tem o projeto clonado: troque de branch**
+
+```bash
+git fetch origin
+git checkout feat/docker
+docker compose up --build
+```
+
+(`git switch feat/docker` faz o mesmo que o `checkout`.) O `git fetch` é necessário para a sua máquina conhecer branches criadas depois do seu clone.
+
+Quando aparecer `VITE ... ready` no terminal, abra http://localhost:5173. Se a página carregar, o ambiente está correto.
+
+Para conferir em qual branch você está:
+
+```bash
+git branch        # a branch ativa aparece com *
+git branch -a     # lista também as branches remotas (origin/...)
+```
+
+Para voltar para a `main`:
+
+```bash
+git checkout main
+```
+
+> Se você tiver alterações não commitadas, o git pode recusar a troca de branch. Faça commit ou use `git stash` antes.
+
+### ⚠️ Aviso para quem já tem o projeto clonado
+
+Depois que esta branch for aceita na `main`, ao fazer `git pull` o git **vai apagar o `node_modules` local**, porque esses arquivos eram versionados. Isso é esperado e não é erro. Depois do pull:
 
 ```bash
 docker compose up --build
 ```
 
-- Frontend: http://localhost:5173
+(ou `npm install` dentro de `frontend/`, para quem não usa Docker).
 
-Observações:
-- O `node_modules` **não é versionado**: ele é instalado automaticamente dentro do container sempre que o frontend sobe (e fica guardado em um volume do Docker, então as próximas subidas são rápidas).
-- O código é montado por volume, então alterações em `frontend/` recarregam sozinhas (hot reload).
-- O backend ainda não roda via Docker: suba-o separadamente (veja abaixo) em `http://localhost:8000`, que é a URL que o frontend usa.
-- Para parar: `docker compose down`. Para zerar também o `node_modules` do container: `docker compose down -v`.
+Quem estiver com uma branch aberta deve fazer `git merge main` nela depois que o Docker entrar. Se houver conflito envolvendo `node_modules`, aceite a remoção.
 
 ---
 
-## ▶️ Como rodar o projeto localmente (sem Docker)
+## 🐳 Como executar com Docker (recomendado)
+
+### Pré-requisitos
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Windows/Mac) ou Docker Engine com Compose v2 (Linux).
+- O Docker Desktop precisa estar **aberto e com o status "Engine running"** antes de rodar os comandos.
+
+### Passo a passo
 
 ```bash
-🔹 1. Clone o repositório
-
-git clone [https://github.com/samarapalomalr/ModeraAI.git](https://github.com/samarapalomalr/ModeraAI.git)
+# 1. Clone o repositório e entre na pasta
+git clone https://github.com/samarapalomalr/ModeraAI.git
 cd ModeraAI
 
-🔹 2. Backend
+# 2. Suba o ambiente
+docker compose up --build
+```
 
-Entre na pasta do backend e instale as dependências:
-cd backend
-pip install -r requirements.txt
+> **Enquanto o PR da `feat/docker` não for aceito**, o `git clone` simples traz a `main`, que ainda não tem o Docker. Nesse caso, clone direto na branch:
+>
+> ```bash
+> git clone -b feat/docker https://github.com/samarapalomalr/ModeraAI.git
+> ```
+>
+> ou, se já clonou, troque de branch com `git fetch origin` e `git checkout feat/docker`. Depois do merge na `main`, o clone simples funciona normalmente.
 
-Crie um arquivo .env dentro da pasta backend/ com suas credenciais:
+Na primeira execução o Docker baixa a imagem do Node e instala as dependências dentro do container, o que leva alguns minutos. Quando aparecer `VITE ... ready`, acesse:
 
-APIFY_API_KEY=sua_chave_apify
-AI_PROVIDER=gemini
-GEMINI_API_KEY=sua_chave_gemini
-GEMINI_MODEL=gemini-2.5-flash
+- **Frontend:** http://localhost:5173
 
-Importante: Para rodar o servidor, permaneça na pasta backend/:
-uvicorn app.main:app --reload
+### Comandos úteis
 
-🔹 3. Frontend
+| Comando                           | O que faz                                                                                  |
+| --------------------------------- | ------------------------------------------------------------------------------------------ |
+| `docker compose up`               | Sobe o ambiente (sem refazer a imagem).                                                    |
+| `docker compose up --build`       | Sobe refazendo a imagem.                                                                   |
+| `docker compose down`             | Para e remove os containers. **Mantém** o `node_modules`.                                  |
+| `docker compose down -v`          | Para tudo e **apaga também o volume** do `node_modules` (a próxima subida reinstala tudo). |
+| `docker compose logs -f frontend` | Acompanha os logs do frontend.                                                             |
 
-Navegue até a pasta frontend em outro terminal:
-cd frontend
-npm install
-npm run dev
+### Conectando com o backend
 
-🔹 4. Acesse no navegador
+O frontend roda no navegador e chama `http://localhost:8000`. Por isso, o backend pode estar em qualquer lugar (outro container ou direto com `uvicorn`), desde que:
 
-http://localhost:5173
-
-🔹 5. Acesso ao sistema em produção
-
-Você pode acessar o sistema implantado diretamente em:
-[https://modera-ai.vercel.app/](https://modera-ai.vercel.app/)
+1. Esteja acessível em `localhost:8000` (se for container, publique a porta com `-p 8000:8000` e use `--host 0.0.0.0` no uvicorn).
+2. Permita CORS para `http://localhost:5173`.
