@@ -3,10 +3,10 @@
 Trabalho prático desenvolvido para a disciplina de **Programação Web** do curso de Ciência da Computação da **Universidade Federal de Ouro Preto (UFOP)**.
 
 ### 👥 Integrantes do Grupo 
-- Ciro Junio
+- Ciro 
 - Estefanio
-- Joao Pedro
-- Samara Paloma
+- Joao 
+- Samara 
 
 ---
 
