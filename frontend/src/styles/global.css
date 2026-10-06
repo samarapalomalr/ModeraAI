@@ -1,19 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* White background and dark text */
-  --bg: #ffffff;
+  /* Fundo suave com gradiente sutil de azul para branco */
+  --bg: linear-gradient(180deg, #eaf3ff 0%, #f8fafc 100%);
   --card: #ffffff;
-  --section: #f8fafc;
-  --text: #0f172a;
+  --section: #f0f6ff;
+  --text: #1e293b;
   --muted: #64748b;
 
-  --primary: #12ffcc; 
-  --primary-glow: rgba(191, 255, 18, 0.3);
+  /* Azul Principal (botões e elementos primários) */
+  --primary: #3b82f6; 
+  --primary-glow: rgba(59, 130, 246, 0.25);
   
-  /* 🔵 NEON BLUE  */
-  --secondary: #6bc4c9;
-  --secondary-glow: rgba(0, 242, 255, 0.3);
+  /* Azul Destaque/Acento (detalhes e hovers) */
+  --secondary: #2563eb;
+  --secondary-glow: rgba(37, 99, 235, 0.2);
 }
 
 * {
@@ -24,8 +25,9 @@ body {
   margin: 0;
   font-family: 'Inter', sans-serif;
   background: var(--bg);
+  background-attachment: fixed;
   color: var(--text);
-  /* Smooth page loading animation */
+  /* Animação suave ao carregar a página */
   animation: fadeIn 0.8s ease-out;
 }
 
@@ -57,19 +59,18 @@ body {
 /* Card */
 .card {
   background: var(--card);
-  border-radius: 20px;
+  border-radius: 24px;
   padding: 24px;
-  border: 1px solid #f1f5f9;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0, 102, 255, 0.05);
   margin-top: 20px;
   transition: all 0.3s ease;
 }
 
 .card:hover {
   transform: translateY(-4px);
-  /* Blue glow on card hover for contrast */
   box-shadow: 0 20px 40px var(--secondary-glow);
-  border-color: var(--secondary);
+  border-color: #bfdbfe;
 }
 
 /* Input */
@@ -83,16 +84,17 @@ body {
   flex: 1;
   padding: 14px;
   border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #fff;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
   font-size: 14px;
+  color: var(--text);
   transition: 0.2s;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--secondary);
-  box-shadow: 0 0 0 4px var(--secondary-glow);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--primary-glow);
 }
 
 .button {
@@ -102,14 +104,15 @@ body {
   border-radius: 999px;
   font-weight: 700;
   cursor: pointer;
-  color: #0f172a; 
+  color: #ffffff; 
   transition: all 0.3s ease;
   box-shadow: 0 4px 15px var(--primary-glow);
 }
 
 .button:hover {
+  background: var(--secondary);
   transform: scale(1.05);
-  box-shadow: 0 0 20px var(--primary);
+  box-shadow: 0 0 20px var(--secondary-glow);
 }
 
 /* Metrics */
@@ -122,7 +125,7 @@ body {
 
 .metric-card {
   background: #ffffff;
-  border: 2px solid #f1f5f9;
+  border: 2px solid #e2e8f0;
   border-radius: 16px;
   padding: 20px;
   text-align: center;
@@ -130,7 +133,7 @@ body {
 }
 
 .metric-card:hover {
-  border-color: var(--secondary);
+  border-color: var(--primary);
   transform: translateY(-2px);
 }
 
@@ -141,12 +144,11 @@ body {
   letter-spacing: 1px;
 }
 
-/* 🔵 Values ​​in Neon Blue 🔵 */
 .metric-value {
   font-size: 24px;
   font-weight: 800;
-  color: var(--secondary);
-  text-shadow: 0 0 8px var(--secondary-glow);
+  color: var(--primary);
+  text-shadow: 0 0 8px var(--primary-glow);
 }
 
 /* Sections */
@@ -161,7 +163,7 @@ body {
 }
 
 .list li {
-  background: #f8fafc;
+  background: #f1f5f9;
   margin-bottom: 10px;
   padding: 14px;
   border-radius: 10px;
@@ -175,16 +177,15 @@ body {
   to { opacity: 1; transform: translateX(0); }
 }
 
-
 .badge {
   display: inline-block;
   padding: 6px 16px;
   border-radius: 999px;
-  background: #efffbe; 
-  color: #0f172a;
+  background: #dbeafe; 
+  color: var(--secondary);
   font-weight: 700;
   font-size: 0.8rem;
-  border: 1px solid rgba(191, 255, 18, 0.2);
+  border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
 .loader-highlight {

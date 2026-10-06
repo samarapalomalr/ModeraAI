@@ -2,7 +2,7 @@ export default function Loader() {
     return (
       <div className="card" style={{ textAlign: "center" }}>
         <p className="loader-highlight">
-          Analisando dados com IA...
+          Analisando dados ... 
         </p>
   
         <p className="loader">

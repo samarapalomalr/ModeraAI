@@ -19,7 +19,7 @@ export default function TextInput({ onSubmit, loading }) {
       <h2 style={{ marginBottom: 10 }}>Analisar Post</h2>
 
       <p className="subtitle">
-        Cole a URL de um post do Instagram para gerar insights com IA
+        Cole a URL de um post do Instagram para gerar informações sobre o conteúdo
       </p>
 
       <div className="input-group">
