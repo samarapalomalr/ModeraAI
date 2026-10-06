@@ -69,7 +69,25 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 
 ---
 
-## ▶️ Como rodar o projeto localmente
+## 🐳 Rodando o frontend com Docker (recomendado)
+
+Garante o mesmo ambiente para todos os devs. Pré-requisito: [Docker Desktop](https://www.docker.com/products/docker-desktop/) (ou Docker Engine com Compose v2) aberto e rodando.
+
+```bash
+docker compose up --build
+```
+
+- Frontend: http://localhost:5173
+
+Observações:
+- O `node_modules` **não é versionado**: ele é instalado automaticamente dentro do container sempre que o frontend sobe (e fica guardado em um volume do Docker, então as próximas subidas são rápidas).
+- O código é montado por volume, então alterações em `frontend/` recarregam sozinhas (hot reload).
+- O backend ainda não roda via Docker: suba-o separadamente (veja abaixo) em `http://localhost:8000`, que é a URL que o frontend usa.
+- Para parar: `docker compose down`. Para zerar também o `node_modules` do container: `docker compose down -v`.
+
+---
+
+## ▶️ Como rodar o projeto localmente (sem Docker)
 
 ```bash
 🔹 1. Clone o repositório

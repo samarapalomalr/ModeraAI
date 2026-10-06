@@ -1,2 +1,21 @@
+# Dependências
+node_modules/
+frontend/node_modules/
+
+# Build
+dist/
+frontend/dist/
+
+# Variáveis de ambiente (nunca versionar chaves)
 .env
 backend/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Sistema / editor
+.DS_Store
+Thumbs.db

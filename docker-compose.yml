@@ -1,0 +1,22 @@
+name: moderaai
+
+services:
+  frontend:
+    build: ./frontend
+    container_name: moderaai-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      # código-fonte do host (hot reload)
+      - ./frontend:/app
+      # node_modules fica num volume do Docker: não vai pro host nem pro git,
+      # e é instalado dentro do container ao subir (npm install no CMD)
+      - frontend_node_modules:/app/node_modules
+    environment:
+      # impede o Vite de tentar abrir o navegador dentro do container
+      - BROWSER=none
+      # hot reload confiável em Windows/macOS (bind mount não envia eventos de arquivo)
+      - CHOKIDAR_USEPOLLING=true
+
+volumes:
+  frontend_node_modules:
