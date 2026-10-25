@@ -12,7 +12,7 @@ Trabalho prático desenvolvido para a disciplina de **Programação Web** do cur
 
 ## 📌 Sobre o projeto
 
-O **ModeraAI** é uma solução Full-Stack de Inteligência e Segurança Digital que utiliza IA Generativa e Visão Computacional para moderar e auditar publicações em redes sociais. Através de uma arquitetura baseada em FastAPI e React, a aplicação automatiza o ciclo completo desde a coleta de dados de uma publicação até a geração de relatórios de segurança e toxicidade. O sistema utiliza o **Google Gemini 2.5 Flash** para processar simultaneamente a imagem, a legenda e os comentários da publicação, garantindo uma análise contextual profunda sobre discursos de ódio, conteúdo ofensivo, sensacionalismo e adequação etária.
+O **ModeraAI** é uma solução Full-Stack de Inteligência e Segurança Digital que utiliza IA Generativa e Visão Computacional para moderar e auditar publicações em redes sociais e plataformas. Através de uma arquitetura baseada em FastAPI e React, a aplicação automatiza o ciclo completo desde a coleta de dados de uma publicação até a geração de relatórios de segurança e toxicidade. O sistema utiliza o **Google Gemini** para processar simultaneamente a imagem, a legenda e os comentários da publicação, garantindo uma análise contextual profunda sobre discursos de ódio, conteúdo ofensivo, sensacionalismo e adequação etária.
 
 ---
 
@@ -32,7 +32,7 @@ O fluxo de dados foi projetado para ser linear, seguro e eficiente:
 
 A aplicação segue uma arquitetura cliente-servidor desacoplada:
 
-`Frontend (React - Vercel)` ➔ `Backend (FastAPI - Render)` ➔ `API de IA (Google Gemini)` ➔ `Coleta de dados (Apify)`
+`Frontend (React - Vercel)` ➔ `Backend (FastAPI)` ➔ `API de IA (Google Gemini)` ➔ `Coleta de dados (Apify)`
 
 ---
 
@@ -59,10 +59,9 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 ### Backend
 - Python
 - FastAPI
-- Render (deploy)
 
 ### Inteligência Artificial
-- Google Gemini 2.5 Flash
+- Google Gemini
 
 ### Coleta de Dados
 - Apify
@@ -71,39 +70,48 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 
 ## ▶️ Como rodar o projeto localmente
 
-```bash
-🔹 1. Clone o repositório
+Para rodar a aplicação em sua máquina, você precisará abrir **dois terminais separados**: um dedicado ao Backend e outro ao Frontend.
 
+### 🔹 1. Clone o repositório
+```bash
 git clone [https://github.com/samarapalomalr/ModeraAI.git](https://github.com/samarapalomalr/ModeraAI.git)
 cd ModeraAI
 
-🔹 2. Backend
+# Terminal 1: Backend (FastAPI)
 
-Entre na pasta do backend e instale as dependências:
+# 1. Entre na pasta do backend
 cd backend
+
+# 2. Crie e ative o ambiente virtual
+python -m venv venv
+# No Linux/macOS:
+source venv/bin/activate
+# No Windows (PowerShell):
+# .\venv\Scripts\Activate
+
+# 3. Instale as dependências
 pip install -r requirements.txt
 
-Crie um arquivo .env dentro da pasta backend/ com suas credenciais:
-
-APIFY_API_KEY=sua_chave_apify
-AI_PROVIDER=gemini
-GEMINI_API_KEY=sua_chave_gemini
-GEMINI_MODEL=gemini-2.5-flash
-
-Importante: Para rodar o servidor, permaneça na pasta backend/:
+# 4. Inicie o servidor FastAPI (permaneça na pasta backend/)
 uvicorn app.main:app --reload
 
-🔹 3. Frontend
+# O backend estará rodando em http://localhost:8000.
 
-Navegue até a pasta frontend em outro terminal:
+ Terminal 2: Frontend (React / Vite)
+
+# 1. Navegue até a pasta do frontend em outro terminal
 cd frontend
+
+# 2. Instale as dependências
 npm install
+
+# 3. Inicie o servidor de desenvolvimento
 npm run dev
 
-🔹 4. Acesse no navegador
+# O frontend estará rodando em http://localhost:5173.
 
+# 5. Acesse no navegador
 http://localhost:5173
 
-
-
+🔹 5. Acesso ao sistema em produção
 
