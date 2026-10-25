@@ -109,8 +109,6 @@ npm install
 npm run dev
 
 # O frontend estará rodando em http://localhost:5173.
-
-# 5. Acesse no navegador
 http://localhost:5173
 
 🔹 5. Acesso ao sistema em produção
