@@ -1,2 +1,17 @@
+# Python / Backend
+__pycache__/
+*.py[cod]
+*$py.class
+backend/venv/
+venv/
+env/
 .env
 backend/.env
+
+# Node / Frontend
+frontend/node_modules/
+node_modules/
+dist/
+build/
+.DS_Store
+.vscode/

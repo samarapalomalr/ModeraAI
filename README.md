@@ -106,5 +106,8 @@ http://localhost:5173
 
 🔹 5. Acesso ao sistema em produção
 
+<<<<<<< HEAD
 Você pode acessar o sistema implantado diretamente em:
 [https://modera-ai.vercel.app/](https://modera-ai.vercel.app/)
+=======
+>>>>>>> cef0bd9 (feat: integração completa frontend e backend, ajuste de rotas e documentação do readme)
