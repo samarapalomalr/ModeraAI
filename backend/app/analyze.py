@@ -1,9 +1,15 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.analyze_schema import AnalyzeRequest, AnalyzeResponse
 from app.helpers import validate_instagram_url
 from app.ai_service import analyze_post_with_ai
 from app.instagram_service import fetch_instagram_data
+from sqlalchemy.orm import Session
+from app.database import get_db
+from app.models import Audit
+from app.analyze_schema import AuditHistoryItem, AuditDetailResponse
+import json
+
 
 router = APIRouter()
 
@@ -44,3 +50,17 @@ def analyze_post(request: AnalyzeRequest):
             status_code=500,
             detail=f"Erro interno na análise: {str(e)}"
         )
+
+# Endpoints de historico exigidos pela Issue #12:
+@router.get("/audits", response_model=list[AuditHistoryItem])
+def list_audits(skip: int = 0, limit: int = 20, db: Session = Depends(get_db)):
+    """Retorna a lista paginada de auditorias salvas."""
+    return db.query(Audit).order_by(Audit.created_at.desc()).offset(skip).limit(limit).all()
+
+@router.get("/audits/{audit_id}", response_model=AuditDetailResponse)
+def get_audit(audit_id: int, db: Session = Depends(get_db)):
+    """Retorna os detalhes completos de uma auditoria."""
+    record = db.query(Audit).filter(Audit.id == audit_id).first()
+    if not record:
+        raise HTTPException(status_code=404, detail="Auditoria não encontrada")
+    return record
