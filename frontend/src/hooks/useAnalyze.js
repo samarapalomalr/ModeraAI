@@ -8,6 +8,16 @@ export function useAnalyze() {
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+feat/seletor-plataformas-e-erros
+  // ANALYZE
+  const analyze = async (input) => {
+    // Trata se o input veio como string ou como objeto { url, platform }
+    const rawUrl = typeof input === "object" ? input?.url : input;
+    const platform = typeof input === "object" ? input?.platform : "instagram";
+
+    // Validação da URL
+    if (!rawUrl || typeof rawUrl !== "string" || rawUrl.trim() === "") {
+
   // -----------------------------
   // ANALYZE 
   // -----------------------------
@@ -24,11 +34,16 @@ export function useAnalyze() {
     }
 
     if (!url || url.trim() === "") {
+main
       setError("⚠️ Informe uma URL válida");
       return;
     }
 
+feat/seletor-plataformas-e-erros
+    const url = rawUrl.trim();
+
     const cleanUrl = url.trim();
+main
 
     setLoading(true);
     setError(null);
@@ -40,13 +55,15 @@ export function useAnalyze() {
     while (attempts < maxAttempts) {
       try {
         const response = await api.post("/analyze", {
+feat/seletor-plataformas-e-erros
+          post_url: url,
+
           post_url: cleanUrl,
+main
           platform: platform,
         });
 
-        // -----------------------------
         // defensive validation
-        // -----------------------------
         if (!response) {
           throw new Error("Sem resposta do servidor");
         }
@@ -59,9 +76,7 @@ export function useAnalyze() {
           throw new Error("Formato de resposta inválido");
         }
 
-        // -----------------------------
         // success
-        // -----------------------------
         setData(response.data);
         setLoading(false);
         return;
@@ -74,32 +89,36 @@ export function useAnalyze() {
           err.message
         );
 
+feat/seletor-plataformas-e-erros
+        if (attempts < maxAttempts) {
+          setError("⚠️ Servidor instável... tentando novamente");
+
         // -----------------------------
         // Retry logic
         // -----------------------------
         if (attempts < maxAttempts) {
           setError("🔁 Servidor instável... tentando novamente");
+main
           await sleep(2500);
           continue;
         }
 
-        // -----------------------------
-        // failed all attempts
-        // -----------------------------
-        setError(
+        // Exibe a mensagem amigável vinda do backend ou a mensagem genérica
+        const errorMessage =
+          err.response?.data?.detail ||
+          err.response?.data?.message ||
           err.message ||
-            "❌ Não foi possível processar o post no momento. Tente novamente."
-        );
+          "❌ Não foi possível processar o post no momento. Tente novamente.";
 
-        setLoading(false);
-        return;
+        setError(errorMessage);
       }
+
+      setLoading(false);
+      return;
     }
   };
 
-  // -----------------------------
   // RESET STATE
-  // -----------------------------
   const reset = () => {
     setData(null);
     setError(null);
