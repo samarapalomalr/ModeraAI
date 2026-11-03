@@ -1,7 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
+from app.database import engine, Base
 from app.analyze import router as analyze_router
+import app.models
+
+# Cria o arquivo moderaai.db automaticamente caso nao exista
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="Intellux AI Backend",
@@ -10,11 +14,11 @@ app = FastAPI(
 )
 
 # -----------------------------
-# CORS 
+# CORS
 # -----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
