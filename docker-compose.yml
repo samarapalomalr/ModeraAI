@@ -1,0 +1,63 @@
+# ModeraAI - ambiente de desenvolvimento completo (frontend + backend + interface do banco)
+# Uso: cp .env.example .env  &&  docker compose up --build
+
+services:
+  backend:
+    build: ./backend
+    container_name: moderaai-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      APIFY_API_KEY: ${APIFY_API_KEY}
+      DEBUG: ${DEBUG:-true}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173}
+      # O arquivo SQLite fica no volume compartilhado com o sqlite-web
+      DATABASE_URL: sqlite:////data/${SQLITE_DB_FILE:-moderaai.db}
+    volumes:
+      - ./backend:/app          # hot reload do código
+      - sqlite_data:/data       # persistência do banco
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  frontend:
+    build: ./frontend
+    container_name: moderaai-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      # URL do backend acessada pelo NAVEGADOR (não pelo container)
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+      DOCKER: "true"
+      CHOKIDAR_USEPOLLING: "true"   # necessário para hot reload no Docker (Windows/macOS)
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules           # mantém node_modules do container
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # Interface web para visualizar/consultar o SQLite
+  sqlite-web:
+    image: coleifer/sqlite-web
+    container_name: moderaai-sqlite-web
+    restart: unless-stopped
+    ports:
+      - "${SQLITE_WEB_PORT:-8080}:8080"
+    environment:
+      SQLITE_DATABASE: ${SQLITE_DB_FILE:-moderaai.db}
+    volumes:
+      - sqlite_data:/data
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  sqlite_data:

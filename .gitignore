@@ -1,0 +1,48 @@
+# ---------- Segredos / ambiente ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+secrets/
+
+# ---------- Python / Backend ----------
+__pycache__/
+*.py[cod]
+*$py.class
+backend/venv/
+venv/
+.venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------- Banco de dados local ----------
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+*.db-wal
+*.db-shm
+
+# ---------- Node / Frontend ----------
+node_modules/
+dist/
+build/
+npm-debug.log*
+yarn-error.log*
+.vite/
+
+# ---------- Docker ----------
+docker-compose.override.yml
+
+# ---------- IDE / SO ----------
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log

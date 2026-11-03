@@ -1,0 +1,6 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+google-genai
+sqlalchemy>=2.0.0
