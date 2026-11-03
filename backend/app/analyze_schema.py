@@ -6,6 +6,7 @@ from typing import List, Optional
 # -----------------------------
 class AnalyzeRequest(BaseModel):
     post_url: str
+    platform: Optional[str] = "instagram"
 
 # -----------------------------
 # METRICS
@@ -24,5 +25,6 @@ class AnalyzeResponse(BaseModel):
     viral_classification: str
     content_type: str
     sentiment: str
+    summary: Optional[str] = "Resumo não disponível."
     insights: List[str]
     recommendations: List[str]

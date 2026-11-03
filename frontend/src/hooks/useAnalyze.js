@@ -11,13 +11,24 @@ export function useAnalyze() {
   // -----------------------------
   // ANALYZE 
   // -----------------------------
-  const analyze = async (post_url) => {
-    if (!post_url || post_url.trim() === "") {
+  const analyze = async (input) => {
+    // Suporta tanto string direta quanto o objeto { url, platform } vindo do Home.jsx
+    let url = "";
+    let platform = "instagram";
+
+    if (typeof input === "object" && input !== null) {
+      url = input.url || "";
+      platform = input.platform || "instagram";
+    } else {
+      url = input || "";
+    }
+
+    if (!url || url.trim() === "") {
       setError("⚠️ Informe uma URL válida");
       return;
     }
 
-    const url = post_url.trim();
+    const cleanUrl = url.trim();
 
     setLoading(true);
     setError(null);
@@ -29,7 +40,8 @@ export function useAnalyze() {
     while (attempts < maxAttempts) {
       try {
         const response = await api.post("/analyze", {
-          post_url: url,
+          post_url: cleanUrl,
+          platform: platform,
         });
 
         // -----------------------------
@@ -63,12 +75,10 @@ export function useAnalyze() {
         );
 
         // -----------------------------
-        // You can still try again
+        // Retry logic
         // -----------------------------
         if (attempts < maxAttempts) {
           setError("🔁 Servidor instável... tentando novamente");
-
-          // Wait before retrying (prevents flooding in the backend)
           await sleep(2500);
           continue;
         }

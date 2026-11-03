@@ -7,6 +7,7 @@ export default function ResultCard({ data }) {
   const contentType = data.content_category || data.content_type || "Geral";
   const ageRating = data.age_rating || data.sentiment || "Livre";
 
+  const summaryText = data.summary || "Resumo indisponível.";
   const moderationList = data.moderation_report || data.insights || [];
   const recommendationsList = data.recommendations || [];
 
@@ -65,6 +66,14 @@ export default function ResultCard({ data }) {
       </div>
 
       <hr style={{ border: "0", borderTop: "1px solid #f1f5f9", margin: "30px 0" }} />
+
+      {/* RESUMO DO POST */}
+      <div className="section" style={{ textAlign: "left", marginBottom: "24px" }}>
+        <h3 style={{ marginBottom: "8px", color: "#1e293b" }}>📌 Sobre o Post</h3>
+        <p style={{ color: "#475569", lineHeight: "1.6", margin: 0 }}>
+          {summaryText}
+        </p>
+      </div>
 
       {/* RELATÓRIO DE MODERAÇÃO */}
       <div className="section">
