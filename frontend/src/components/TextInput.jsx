@@ -1,41 +1,75 @@
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function TextInput({ onSubmit, loading }) {
-  const [value, setValue] = useState("");
+  const [platform, setPlatform] = useState("instagram");
+  const [url, setUrl] = useState("");
+
+  const platforms = [
+    { id: "instagram", name: "Instagram", placeholder: "https://instagram.com/p/..." },
+    { id: "tiktok", name: "TikTok", placeholder: "https://www.tiktok.com/@usuario/video/..." },
+    { id: "youtube", name: "YouTube", placeholder: "https://www.youtube.com/watch?v=..." },
+  ];
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!value.trim()) {
-      alert("Por favor, insira uma URL válida");
-      return;
-    }
-
-    onSubmit(value);
+    if (!url.trim()) return;
+    onSubmit({ url, platform });
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="card">
-      <h2 style={{ marginBottom: 10 }}>Analisar Post</h2>
+  const currentPlatform = platforms.find((p) => p.id === platform);
 
-      <p className="subtitle">
-        Cole a URL de um post do Instagram para gerar informações sobre o conteúdo
+  return (
+    <div className="card">
+      {/* SELETOR DE PLATAFORMAS */}
+      <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
+        {platforms.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => setPlatform(p.id)}
+            style={{
+              flex: 1,
+              padding: "8px 12px",
+              borderRadius: "8px",
+              border: platform === p.id ? "2px solid #2563eb" : "1px solid #cbd5e1",
+              backgroundColor: platform === p.id ? "#eff6ff" : "#ffffff",
+              color: platform === p.id ? "#1e40af" : "#475569",
+              fontWeight: platform === p.id ? "600" : "normal",
+              cursor: "pointer",
+              transition: "all 0.2s"
+            }}
+          >
+            {p.name}
+          </button>
+        ))}
+      </div>
+
+      {/* MENSAGEM DE INSTRUÇÃO */}
+      <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "8px", textAlign: "left" }}>
+        Cole o link do post da rede social que deseja analisar:
       </p>
 
-      <div className="input-group">
+      {/* FORMULÁRIO DE ENTRADA */}
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px" }}>
         <input
           type="text"
-          placeholder="https://instagram.com/p/..."
           className="input"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          disabled={loading}
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder={currentPlatform.placeholder}
+          required
+          style={{
+            flex: 1,
+            padding: "10px 14px",
+            borderRadius: "8px",
+            border: "1px solid #cbd5e1",
+            outline: "none"
+          }}
         />
-
-        <button className="button button-neon" disabled={loading}>
+        <button className="button" type="submit" disabled={loading}>
           {loading ? "Analisando..." : "Analisar"}
         </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
