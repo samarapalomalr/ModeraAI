@@ -7,7 +7,7 @@ APIFY_URL = "https://api.apify.com/v2/acts/apify~instagram-scraper/run-sync-get-
 def fetch_instagram_data(url: str):
     """
     Busca dados do Instagram via Apify.
-    Agora captura a imagem de exibição para análise multimodal da IA.
+    Captura a imagem de exibição para análise multimodal da IA.
     """
 
     if not settings.APIFY_API_KEY:

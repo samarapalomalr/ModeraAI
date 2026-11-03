@@ -8,7 +8,7 @@ import app.models
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Intellux AI Backend",
+    title="Modera AI Backend",
     description="API para análise de posts do Instagram com IA generativa",
     version="1.0.0"
 )
@@ -36,5 +36,5 @@ app.include_router(analyze_router)
 def root():
     return {
         "status": "ok",
-        "message": "Intellux API rodando 🚀"
+        "message": "Modera API rodando 🚀"
     }

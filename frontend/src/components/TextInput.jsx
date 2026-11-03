@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function TextInput({ onSubmit, loading }) {
+export default function TextInput({ onSubmit, loading, placeholder }) {
   const [value, setValue] = useState("");
 
   const handleSubmit = (e) => {
@@ -11,7 +11,7 @@ export default function TextInput({ onSubmit, loading }) {
       return;
     }
 
-    onSubmit(value);
+    onSubmit(value.trim());
   };
 
   return (
@@ -19,20 +19,20 @@ export default function TextInput({ onSubmit, loading }) {
       <h2 style={{ marginBottom: 10 }}>Analisar Post</h2>
 
       <p className="subtitle">
-        Cole a URL de um post do Instagram para gerar informações sobre o conteúdo
+        Cole a URL de um post para gerar informações sobre o conteúdo
       </p>
 
       <div className="input-group">
         <input
-          type="text"
-          placeholder="https://instagram.com/p/..."
+          type="url"
+          placeholder={placeholder || "https://..."}
           className="input"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           disabled={loading}
         />
 
-        <button className="button button-neon" disabled={loading}>
+        <button className="button button-neon" disabled={loading || !value.trim()}>
           {loading ? "Analisando..." : "Analisar"}
         </button>
       </div>

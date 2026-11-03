@@ -11,7 +11,7 @@ class Settings:
 
     GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
-    APP_NAME = "Intellux AI Backend"
+    APP_NAME = "Modera AI Backend"
     DEBUG = True
 
     def __post_init__(self):
