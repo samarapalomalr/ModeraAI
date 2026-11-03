@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+feat/seletor-plataformas-e-erros
 export default function TextInput({ onSubmit, loading }) {
   const [platform, setPlatform] = useState("instagram");
   const [url, setUrl] = useState("");
@@ -14,6 +15,20 @@ export default function TextInput({ onSubmit, loading }) {
     e.preventDefault();
     if (!url.trim()) return;
     onSubmit({ url, platform });
+
+export default function TextInput({ onSubmit, loading, placeholder }) {
+  const [value, setValue] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (!value.trim()) {
+      alert("Por favor, insira uma URL válida");
+      return;
+    }
+
+    onSubmit(value.trim());
+ main
   };
 
   const currentPlatform = platforms.find((p) => p.id === platform);
@@ -44,15 +59,25 @@ export default function TextInput({ onSubmit, loading }) {
         ))}
       </div>
 
+feat/seletor-plataformas-e-erros
       {/* MENSAGEM DE INSTRUÇÃO */}
       <p style={{ fontSize: "14px", color: "#64748b", marginBottom: "8px", textAlign: "left" }}>
         Cole o link do post da rede social que deseja analisar:
+
+      <p className="subtitle">
+        Cole a URL de um post para gerar informações sobre o conteúdo
+main
       </p>
 
       {/* FORMULÁRIO DE ENTRADA */}
       <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px" }}>
         <input
+feat/seletor-plataformas-e-erros
           type="text"
+
+          type="url"
+          placeholder={placeholder || "https://..."}
+ main
           className="input"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
@@ -66,7 +91,12 @@ export default function TextInput({ onSubmit, loading }) {
             outline: "none"
           }}
         />
+ feat/seletor-plataformas-e-erros
         <button className="button" type="submit" disabled={loading}>
+
+
+        <button className="button button-neon" disabled={loading || !value.trim()}>
+ main
           {loading ? "Analisando..." : "Analisar"}
         </button>
       </form>

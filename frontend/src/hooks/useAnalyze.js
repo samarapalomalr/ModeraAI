@@ -8,6 +8,7 @@ export function useAnalyze() {
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+feat/seletor-plataformas-e-erros
   // ANALYZE
   const analyze = async (input) => {
     // Trata se o input veio como string ou como objeto { url, platform }
@@ -16,11 +17,33 @@ export function useAnalyze() {
 
     // Validação da URL
     if (!rawUrl || typeof rawUrl !== "string" || rawUrl.trim() === "") {
+
+  // -----------------------------
+  // ANALYZE 
+  // -----------------------------
+  const analyze = async (input) => {
+    // Suporta tanto string direta quanto o objeto { url, platform } vindo do Home.jsx
+    let url = "";
+    let platform = "instagram";
+
+    if (typeof input === "object" && input !== null) {
+      url = input.url || "";
+      platform = input.platform || "instagram";
+    } else {
+      url = input || "";
+    }
+
+    if (!url || url.trim() === "") {
+main
       setError("⚠️ Informe uma URL válida");
       return;
     }
 
+feat/seletor-plataformas-e-erros
     const url = rawUrl.trim();
+
+    const cleanUrl = url.trim();
+main
 
     setLoading(true);
     setError(null);
@@ -32,7 +55,11 @@ export function useAnalyze() {
     while (attempts < maxAttempts) {
       try {
         const response = await api.post("/analyze", {
+feat/seletor-plataformas-e-erros
           post_url: url,
+
+          post_url: cleanUrl,
+main
           platform: platform,
         });
 
@@ -62,8 +89,16 @@ export function useAnalyze() {
           err.message
         );
 
+feat/seletor-plataformas-e-erros
         if (attempts < maxAttempts) {
           setError("⚠️ Servidor instável... tentando novamente");
+
+        // -----------------------------
+        // Retry logic
+        // -----------------------------
+        if (attempts < maxAttempts) {
+          setError("🔁 Servidor instável... tentando novamente");
+main
           await sleep(2500);
           continue;
         }
