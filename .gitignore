@@ -7,6 +7,9 @@ venv/
 env/
 .env
 backend/.env
+*.db
+*.sqlite3
+
 
 # Node / Frontend
 frontend/node_modules/
