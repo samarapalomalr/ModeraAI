@@ -1,7 +1,8 @@
 import axios from "axios";
 
+// URL do backend: definida via VITE_API_URL (docker-compose) ou localhost por padrão
 const api = axios.create({
-  baseURL: "http://localhost:8000", 
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:8000",
 });
 
 export const wakeUpBackend = async () => {

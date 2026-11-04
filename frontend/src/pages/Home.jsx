@@ -23,7 +23,6 @@ export default function Home() {
   return (
     <div className="container">
       {/* HEADER */}
-feat/seletor-plataformas-e-erros
       <div style={{ marginBottom: 30, textAlign: "center" }}>
         <h1 className="title">ModeraAI</h1>
         <p className="subtitle" style={{ color: "#64748b", marginTop: 8 }}>
@@ -31,73 +30,68 @@ feat/seletor-plataformas-e-erros
         </p>
       </div>
 
-      {/* INPUT COM SELETOR */}
-      <TextInput 
-        key={data ? "analisado" : "novo"} 
-        onSubmit={analyze} 
-        loading={loading} 
-
-      <div style={{ marginBottom: 32, textAlign: "center" }}>
-        <h1 className="title">ModeraAI</h1>
-        <p className="subtitle">
-          Análise inteligente de conteúdo em redes sociais
-        </p>
+      {/* SELETOR DE PLATAFORMA */}
+      <div
+        style={{
+          display: "flex",
+          gap: 8,
+          marginBottom: 16,
+          flexWrap: "wrap",
+          justifyContent: "center",
+        }}
+      >
+        {PLATFORMS.map((p) => (
+          <button
+            key={p.id}
+            type="button"
+            onClick={() => setPlatform(p.id)}
+            disabled={loading}
+            style={{
+              padding: "8px 16px",
+              borderRadius: 8,
+              border: platform === p.id ? "2px solid #2563eb" : "1px solid #cbd5e1",
+              backgroundColor: platform === p.id ? "#eff6ff" : "#ffffff",
+              color: platform === p.id ? "#1e40af" : "#475569",
+              fontWeight: platform === p.id ? 600 : "normal",
+              cursor: loading ? "not-allowed" : "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            {p.name}
+          </button>
+        ))}
       </div>
 
-      {/* PLATFORM SELECTOR */}
-      <div className="platform-selector" style={{ marginBottom: 20 }}>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
-          {PLATFORMS.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => setPlatform(p.id)}
-              className={`platform-chip ${platform === p.id ? "active" : ""}`}
-              disabled={loading}
-            >
-              {p.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* INPUT */}
+      {/* INPUT (só reinicia ao voltar do resultado; trocar de plataforma mantém o texto digitado) */}
       <TextInput
-        key={`${platform}-${data ? "analisado" : "novo"}`}
+        key={data ? "analisado" : "novo"}
         placeholder={selectedPlatform?.placeholder}
-        platform={platform}
         onSubmit={handleAnalyze}
         loading={loading}
-main
       />
 
       {/* MENSAGEM DE ERRO AMIGÁVEL */}
-      {error && (
-feat/seletor-plataformas-e-erros
-        <div 
-          className="card" 
-          style={{ 
-            marginTop: 20, 
-            backgroundColor: "#fef2f2", 
-            borderLeft: "4px solid #ef4444", 
-            padding: "16px 20px" 
+      {error && !loading && (
+        <div
+          className="card"
+          style={{
+            marginTop: 20,
+            backgroundColor: "#fef2f2",
+            borderLeft: "4px solid #ef4444",
+            padding: "16px 20px",
           }}
         >
           <div style={{ display: "flex", alignItems: "flex-start", gap: "12px" }}>
             <span style={{ fontSize: "20px" }}>⚠️</span>
             <div>
-              <h4 style={{ margin: 0, color: "#991b1b", fontWeight: "600", fontSize: "15px" }}>
+              <h4 style={{ margin: 0, color: "#991b1b", fontWeight: 600, fontSize: "15px" }}>
                 Não foi possível concluir a análise
               </h4>
-              <p style={{ margin: "4px 0 0 0", color: "#b91c1c", fontSize: "14px", lineHeight: "1.4" }}>
+              <p style={{ margin: "4px 0 0 0", color: "#b91c1c", fontSize: "14px", lineHeight: 1.4 }}>
                 {error}
               </p>
             </div>
           </div>
-
-        <div className="card" style={{ marginTop: 20 }}>
-          <p style={{ color: "#ef4444", margin: 0 }}>❌ {error}</p>
-main
         </div>
       )}
 

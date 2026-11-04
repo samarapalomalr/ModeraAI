@@ -1,0 +1,74 @@
+# ModeraAI - ambiente de desenvolvimento com Docker
+# Uso:  cp .env.example .env  (preencha as chaves)  &&  docker compose up --build
+
+name: moderaai
+
+services:
+  # ---------------------------------------------------------
+  # Backend - FastAPI (http://localhost:8000, docs em /docs)
+  # ---------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+    container_name: moderaai-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY:?Defina GEMINI_API_KEY no arquivo .env}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      APIFY_API_KEY: ${APIFY_API_KEY:?Defina APIFY_API_KEY no arquivo .env}
+      # Banco SQLite salvo no volume compartilhado com o sqlite-web
+      DATABASE_URL: sqlite:////data/${SQLITE_DB_FILE:-moderaai.db}
+    volumes:
+      - ./backend:/app          # código-fonte (hot reload do uvicorn)
+      - sqlite_data:/data       # banco de dados persistente
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # ---------------------------------------------------------
+  # Frontend - React + Vite (http://localhost:5173)
+  # ---------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+    container_name: moderaai-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-5173}:5173"
+    environment:
+      # O navegador (na sua máquina) é quem chama o backend, por isso localhost
+      VITE_API_URL: http://localhost:${BACKEND_PORT:-8000}
+      VITE_OPEN_BROWSER: "false"
+      CHOKIDAR_USEPOLLING: ${CHOKIDAR_USEPOLLING:-true}
+    volumes:
+      - ./frontend:/app         # código-fonte (hot reload do Vite)
+      - /app/node_modules       # mantém o node_modules do container (não usa o do host)
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # ---------------------------------------------------------
+  # Interface do banco SQLite - sqlite-web (http://localhost:8080)
+  # ---------------------------------------------------------
+  sqlite-web:
+    image: coleifer/sqlite-web
+    container_name: moderaai-sqlite-web
+    restart: unless-stopped
+    ports:
+      # Somente 127.0.0.1: a interface não tem autenticação
+      - "127.0.0.1:${SQLITE_WEB_PORT:-8080}:8080"
+    environment:
+      SQLITE_DATABASE: ${SQLITE_DB_FILE:-moderaai.db}
+    volumes:
+      - sqlite_data:/data
+    depends_on:
+      backend:
+        condition: service_healthy   # o backend cria o arquivo .db na inicialização
+
+volumes:
+  sqlite_data:
