@@ -2,10 +2,17 @@ export default function ResultCard({ data }) {
   if (!data) return null;
 
   const metrics = data.metrics;
-  const toxicityScore = data.toxicity_score ?? data.engagement_score ?? 0;
-  const harmClass = data.harm_classification || data.viral_classification || "Sem Risco";
+
+  // Toxicidade real (estimada pela IA, 0-100). Nunca usa engagement_score.
+  const rawToxicity = data.toxicity_score;
+  const hasToxicity = rawToxicity !== null && rawToxicity !== undefined && !Number.isNaN(Number(rawToxicity));
+  const toxicityScore = hasToxicity ? Math.min(Math.max(Number(rawToxicity), 0), 100) : null;
+
+  const harmClass = data.harm_classification || "Indeterminado";
+  const viralClass = data.viral_classification;
   const contentType = data.content_category || data.content_type || "Geral";
-  const ageRating = data.age_rating || data.sentiment || "Livre";
+  const ageRating = data.age_rating || "Indeterminado";
+  const tone = data.sentiment;
 
   const summaryText = data.summary || "Resumo indisponível.";
   const moderationList = data.moderation_report || data.insights || [];
@@ -15,7 +22,7 @@ export default function ResultCard({ data }) {
     <div className="card result-card">
       <div className="result-header">
         <h2 style={{ textAlign: "center", marginBottom: "24px" }}>
-           Diagnóstico de Moderação
+          Diagnóstico de Moderação
         </h2>
       </div>
 
@@ -38,7 +45,7 @@ export default function ResultCard({ data }) {
         <div className="metric-card">
           <div className="metric-title">Toxicidade</div>
           <div className="metric-value">
-            {toxicityScore}%
+            {toxicityScore === null ? "—" : `${toxicityScore.toFixed(1)}%`}
           </div>
         </div>
       </div>
@@ -54,15 +61,11 @@ export default function ResultCard({ data }) {
           marginTop: "20px",
         }}
       >
-        <span className="badge">
-          ⚠️ {String(harmClass).toUpperCase()}
-        </span>
-        <span className="badge">
-          📌 {contentType}
-        </span>
-        <span className="badge">
-          Faixa Etária: {ageRating}
-        </span>
+        <span className="badge">⚠️ Risco: {String(harmClass).toUpperCase()}</span>
+        {viralClass && <span className="badge">🔥 {String(viralClass).toUpperCase()}</span>}
+        <span className="badge">📌 {contentType}</span>
+        <span className="badge">Faixa Etária: {ageRating}</span>
+        {tone && <span className="badge">Tom: {tone}</span>}
       </div>
 
       <hr style={{ border: "0", borderTop: "1px solid #f1f5f9", margin: "30px 0" }} />

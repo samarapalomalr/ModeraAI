@@ -10,12 +10,14 @@ class AnalyzeRequest(BaseModel):
     post_url: str
     platform: Optional[str] = "instagram"
 
+
 # -----------------------------
 # METRICS
 # -----------------------------
 class Metrics(BaseModel):
     likes: int = 0
     comments: int = 0
+
 
 # -----------------------------
 # RESPONSE
@@ -27,9 +29,14 @@ class AnalyzeResponse(BaseModel):
     viral_classification: str
     content_type: str
     sentiment: str
+    age_rating: str = "Indeterminado"   # Livre, 10+, 12+, 14+, 16+, 18+
+    toxicity_score: Optional[float] = None       # 0-100, estimado pela IA (None se a IA falhar)
+    harm_classification: str = "Indeterminado"   # Sem Risco, Baixo, Moderado, Alto, Crítico
+    ai_failed: bool = False             # True quando a IA não conseguiu analisar
     summary: Optional[str] = "Resumo não disponível."
     insights: List[str]
     recommendations: List[str]
+
 
 class AuditHistoryItem(BaseModel):
     id: int
@@ -41,6 +48,7 @@ class AuditHistoryItem(BaseModel):
 
     class Config:
         from_attributes = True
+
 
 class AuditDetailResponse(AuditHistoryItem):
     raw_content: Optional[str] = None
