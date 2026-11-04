@@ -59,6 +59,7 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 ### Backend
 - Python
 - FastAPI
+- SQLAlchemy + SQLite (histórico de auditorias)
 
 ### Inteligência Artificial
 - Google Gemini
@@ -66,49 +67,118 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 ### Coleta de Dados
 - Apify
 
+### Infraestrutura
+- Docker e Docker Compose
+- sqlite-web (interface web do banco de dados)
+
 ---
 
-## ▶️ Como rodar o projeto localmente
+## 🐳 Como rodar com Docker (recomendado)
 
-Para rodar a aplicação em sua máquina, você precisará abrir **dois terminais separados**: um dedicado ao Backend e outro ao Frontend.
+Com o Docker, **frontend, backend e a interface do banco sobem juntos com um único comando**, sem instalar Python ou Node na sua máquina.
 
-### 🔹 1. Clone o repositório
+### Pré-requisitos
+- [Docker](https://docs.docker.com/get-docker/) com Docker Compose v2 (`docker compose version`)
+- Chave da API do **Google Gemini**: https://aistudio.google.com/app/apikey
+- Token da API do **Apify**: https://console.apify.com/account/integrations
+
+### Passo a passo
+
 ```bash
-git clone [https://github.com/samarapalomalr/ModeraAI.git](https://github.com/samarapalomalr/ModeraAI.git)
+# 1. Clone o repositório
+git clone https://github.com/samarapalomalr/ModeraAI.git
 cd ModeraAI
 
-# Terminal 1: Backend (FastAPI)
+# 2. Crie o arquivo .env a partir do modelo
+cp .env.example .env        # Windows (PowerShell): Copy-Item .env.example .env
 
-# 1. Entre na pasta do backend
+# 3. Abra o .env e preencha GEMINI_API_KEY e APIFY_API_KEY
+
+# 4. Suba tudo (a primeira vez demora por causa do build)
+docker compose up --build
+```
+
+### Serviços disponíveis
+
+| Serviço | URL | Descrição |
+|---|---|---|
+| Frontend (React + Vite) | http://localhost:5173 | Interface da aplicação |
+| Backend (FastAPI) | http://localhost:8000 | API (documentação interativa em http://localhost:8000/docs) |
+| sqlite-web | http://localhost:8080 | Interface web para visualizar e consultar o banco SQLite |
+
+> As portas podem ser alteradas no `.env` (`FRONTEND_PORT`, `BACKEND_PORT`, `SQLITE_WEB_PORT`).
+
+### Variáveis de ambiente (`.env`)
+
+| Variável | Obrigatória | Descrição |
+|---|---|---|
+| `GEMINI_API_KEY` | ✅ | Chave da API do Google Gemini |
+| `APIFY_API_KEY` | ✅ | Token da API do Apify |
+| `GEMINI_MODEL` | ❌ | Modelo do Gemini (padrão: `gemini-2.5-flash`) |
+| `FRONTEND_PORT` / `BACKEND_PORT` / `SQLITE_WEB_PORT` | ❌ | Portas expostas na sua máquina |
+| `SQLITE_DB_FILE` | ❌ | Nome do arquivo do banco no volume Docker (padrão: `moderaai.db`) |
+| `CHOKIDAR_USEPOLLING` | ❌ | `true` no Windows/macOS para o hot reload do frontend funcionar; pode ser `false` no Linux |
+
+⚠️ **O arquivo `.env` contém chaves secretas e nunca deve ser versionado.** Apenas o `.env.example` vai para o GitHub.
+
+### Comandos úteis
+
+```bash
+docker compose up -d --build        # sobe em segundo plano
+docker compose logs -f backend      # acompanha os logs de um serviço
+docker compose ps                   # status dos containers
+docker compose down                 # para e remove os containers (mantém o banco)
+docker compose down -v              # ⚠️ também apaga o volume do banco de dados
+
+# Popula o banco com auditorias de teste (sem gastar cota das APIs)
+docker compose exec backend python seed.py
+```
+
+### 🗄️ Banco de dados
+
+O projeto usa **SQLite** (via SQLAlchemy). No Docker, o arquivo do banco fica em um **volume nomeado** (`sqlite_data`), então os dados persistem entre reinicializações. Para explorar as tabelas (`audits`), rodar consultas SQL ou exportar dados, acesse o **sqlite-web** em http://localhost:8080.
+
+> A interface do banco não possui autenticação, por isso é exposta apenas em `127.0.0.1`.
+
+### 🔧 Solução de problemas
+
+- **`Defina GEMINI_API_KEY no arquivo .env`**: o `.env` não existe ou está com a chave vazia. Veja o passo 2 e 3.
+- **Porta já em uso**: altere a porta correspondente no `.env`.
+- **Instalei uma dependência nova (`requirements.txt` ou `package.json`)**: rode `docker compose up --build -V` para reconstruir as imagens e renovar o `node_modules` do container.
+- **Hot reload do frontend não funciona (Windows/macOS)**: confirme `CHOKIDAR_USEPOLLING=true` no `.env`.
+
+---
+
+## ▶️ Como rodar o projeto localmente (sem Docker)
+
+Você precisará de **dois terminais**: um para o Backend e outro para o Frontend. Requer Python 3.10+ e Node.js 18+.
+
+### 🔹 1. Clone o repositório e configure o `.env`
+```bash
+git clone https://github.com/samarapalomalr/ModeraAI.git
+cd ModeraAI
+cp .env.example .env   # preencha GEMINI_API_KEY e APIFY_API_KEY
+```
+
+### 🔹 2. Terminal 1: Backend (FastAPI)
+```bash
 cd backend
 
-# 2. Crie e ative o ambiente virtual
+# Crie e ative o ambiente virtual
 python -m venv venv
-# No Linux/macOS:
-source venv/bin/activate
-# No Windows (PowerShell):
-# .\venv\Scripts\Activate
+source venv/bin/activate        # Linux/macOS
+# .\venv\Scripts\Activate      # Windows (PowerShell)
 
-# 3. Instale as dependências
+# Instale as dependências e inicie o servidor (permaneça na pasta backend/)
 pip install -r requirements.txt
-
-# 4. Inicie o servidor FastAPI (permaneça na pasta backend/)
 uvicorn app.main:app --reload
+```
+O backend estará em http://localhost:8000. Sem Docker, o banco é criado automaticamente em `backend/moderaai.db`.
 
-# O backend estará rodando em http://localhost:8000.
-
- Terminal 2: Frontend (React / Vite)
-
-# 1. Navegue até a pasta do frontend em outro terminal
+### 🔹 3. Terminal 2: Frontend (React / Vite)
+```bash
 cd frontend
-
-# 2. Instale as dependências
 npm install
-
-# 3. Inicie o servidor de desenvolvimento
 npm run dev
-
-# O frontend estará rodando em http://localhost:5173.
-http://localhost:5173
-
-
+```
+O frontend estará em http://localhost:5173.

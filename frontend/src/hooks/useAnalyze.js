@@ -8,18 +8,8 @@ export function useAnalyze() {
 
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-feat/seletor-plataformas-e-erros
-  // ANALYZE
-  const analyze = async (input) => {
-    // Trata se o input veio como string ou como objeto { url, platform }
-    const rawUrl = typeof input === "object" ? input?.url : input;
-    const platform = typeof input === "object" ? input?.platform : "instagram";
-
-    // Validação da URL
-    if (!rawUrl || typeof rawUrl !== "string" || rawUrl.trim() === "") {
-
   // -----------------------------
-  // ANALYZE 
+  // ANALYZE
   // -----------------------------
   const analyze = async (input) => {
     // Suporta tanto string direta quanto o objeto { url, platform } vindo do Home.jsx
@@ -33,17 +23,12 @@ feat/seletor-plataformas-e-erros
       url = input || "";
     }
 
-    if (!url || url.trim() === "") {
-main
+    const cleanUrl = typeof url === "string" ? url.trim() : "";
+
+    if (!cleanUrl) {
       setError("⚠️ Informe uma URL válida");
       return;
     }
-
-feat/seletor-plataformas-e-erros
-    const url = rawUrl.trim();
-
-    const cleanUrl = url.trim();
-main
 
     setLoading(true);
     setError(null);
@@ -55,11 +40,7 @@ main
     while (attempts < maxAttempts) {
       try {
         const response = await api.post("/analyze", {
-feat/seletor-plataformas-e-erros
-          post_url: url,
-
           post_url: cleanUrl,
-main
           platform: platform,
         });
 
@@ -80,7 +61,6 @@ main
         setData(response.data);
         setLoading(false);
         return;
-
       } catch (err) {
         attempts++;
 
@@ -89,16 +69,15 @@ main
           err.message
         );
 
-feat/seletor-plataformas-e-erros
-        if (attempts < maxAttempts) {
-          setError("⚠️ Servidor instável... tentando novamente");
+        // Erros 4xx (ex.: URL inválida) são do usuário: repetir não adianta
+        const status = err.response?.status;
+        const isClientError = status >= 400 && status < 500;
 
         // -----------------------------
         // Retry logic
         // -----------------------------
-        if (attempts < maxAttempts) {
-          setError("🔁 Servidor instável... tentando novamente");
-main
+        if (!isClientError && attempts < maxAttempts) {
+          setError("⚠️ Servidor instável... tentando novamente");
           await sleep(2500);
           continue;
         }
@@ -111,10 +90,9 @@ main
           "❌ Não foi possível processar o post no momento. Tente novamente.";
 
         setError(errorMessage);
+        setLoading(false);
+        return;
       }
-
-      setLoading(false);
-      return;
     }
   };
 

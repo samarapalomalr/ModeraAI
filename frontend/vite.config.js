@@ -10,6 +10,12 @@ export default defineConfig({
   ],
   server: {
     port: 5173,
-    open: true, // Abre o navegador automaticamente ao iniciar o dev server
+    // Abre o navegador ao iniciar o dev server (desativado no Docker via VITE_OPEN_BROWSER=false)
+    open: process.env.VITE_OPEN_BROWSER !== 'false',
+    // Em Docker no Windows/macOS os eventos de arquivo nem sempre chegam ao container;
+    // CHOKIDAR_USEPOLLING=true ativa polling para o hot reload funcionar.
+    watch: {
+      usePolling: process.env.CHOKIDAR_USEPOLLING === 'true',
+    },
   },
 });
