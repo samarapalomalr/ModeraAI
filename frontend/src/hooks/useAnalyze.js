@@ -66,7 +66,7 @@ export function useAnalyze() {
 
         console.warn(
           `[ANALYZE ERROR] tentativa ${attempts}/${maxAttempts}:`,
-          err.message
+          err.message,
         );
 
         // Erros 4xx (ex.: URL inválida) são do usuário: repetir não adianta

@@ -4,8 +4,8 @@ Permite testar os endpoints de histórico e a interface sem gastar cotas de APIs
 """
 import json
 from datetime import datetime, timezone
-from app.database import engine, Base, SessionLocal
-from app.models import Audit
+from app.infrastructure.database.session import engine, Base, SessionLocal
+from app.infrastructure.database.models import Audit
 
 def seed():
     # Garante que as tabelas existem

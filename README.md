@@ -48,6 +48,22 @@ A aplicação segue uma arquitetura cliente-servidor desacoplada:
 
 ---
 
+### 🧱 Estrutura do backend (arquitetura em camadas)
+
+```
+backend/app/
+├── api/              # Apresentação: routes/ (FastAPI) e schemas/ (DTOs)
+├── services/         # Casos de uso (AnalysisService, AuditService, MediaService)
+├── domain/           # Regras puras: interfaces/ (contratos), scoring, normalizers
+├── repositories/     # Persistência (SQLAlchemy)
+├── infrastructure/   # Adaptadores: ai/ (Gemini), scraping/ (Apify), cache/, database/
+├── core/             # config, exceções e injeção de dependências (dependencies.py)
+└── utils/
+```
+
+Fluxo de dependências: `api → services → domain ← infrastructure / repositories`.
+Os serviços dependem apenas de interfaces (`domain/interfaces`); as implementações concretas são ligadas em `core/dependencies.py` (princípios SOLID, em especial DIP e SRP).
+
 ## ⚙️ Tecnologias Utilizadas
 
 ### Frontend
