@@ -51,3 +51,12 @@ ESTRUTURA JSON OBRIGATÓRIA:
 Legenda Bruta: {post_data.get("caption", "Sem legenda disponível")}
 Hashtags: {", ".join(post_data.get("hashtags", []))}   
 """
+
+def to_int(value) -> int:
+    """Converte para int de forma segura (aceita número, string ou lista)."""
+    if isinstance(value, (list, tuple)):
+        return len(value)
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return 0

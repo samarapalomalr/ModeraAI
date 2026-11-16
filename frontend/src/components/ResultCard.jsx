@@ -1,5 +1,34 @@
+import { useState } from "react";
+import api from "../services/api";
+
+// Cor do indicador conforme a classificação de risco
+function riskTone(harm) {
+  const h = String(harm || "").toLowerCase();
+  if (h.includes("sem") || h === "baixo") return "ok";
+  if (h === "moderado") return "warn";
+  if (h === "alto" || h.includes("cr")) return "danger";
+  return "";
+}
+
+function toxicityTone(score) {
+  if (score < 25) return "ok";
+  if (score < 60) return "warn";
+  return "danger";
+}
+
 export default function ResultCard({ data }) {
+  // 0 = proxy do backend, 1 = URL direta do CDN, 2 = indisponível
+  const [imageStage, setImageStage] = useState(0);
+
   if (!data) return null;
+
+  // A imagem passa pelo proxy do backend (o CDN do Instagram bloqueia hotlink).
+  const proxySrc = data.display_url
+    ? `${api.defaults.baseURL}/media?url=${encodeURIComponent(data.display_url)}`
+    : null;
+  const imageSrc = imageStage === 0 ? proxySrc : data.display_url;
+  const hasImage = Boolean(data.display_url);
+  const showImage = hasImage && imageStage < 2;
 
   const metrics = data.metrics;
 
@@ -18,71 +47,67 @@ export default function ResultCard({ data }) {
   const moderationList = data.moderation_report || data.insights || [];
   const recommendationsList = data.recommendations || [];
 
+  const tox = toxicityScore === null ? "" : toxicityTone(toxicityScore);
+
   return (
     <div className="card result-card">
-      <div className="result-header">
-        <h2 style={{ textAlign: "center", marginBottom: "24px" }}>
-          Diagnóstico de Moderação
-        </h2>
+      <h2 className="result-title">Diagnóstico de Moderação</h2>
+
+      {/* IMAGEM + RESUMO */}
+      <div className="post-layout" style={hasImage ? undefined : { gridTemplateColumns: "1fr" }}>
+        {showImage && (
+          <img
+            className="post-image"
+            src={imageSrc}
+            alt="Imagem do post analisado"
+            referrerPolicy="no-referrer"
+            onError={() => setImageStage((s) => s + 1)}
+          />
+        )}
+        {hasImage && !showImage && <div className="post-image-fallback">🖼️ Imagem indisponível</div>}
+        <div>
+          <h3 className="section-title">Sobre o post</h3>
+          <p className="summary">{summaryText}</p>
+          <div className="badges" style={{ justifyContent: "flex-start", marginTop: 0 }}>
+            <span className={`badge ${riskTone(harmClass)}`}>⚠️ Risco: {String(harmClass)}</span>
+            {viralClass && <span className="badge">🔥 {String(viralClass)}</span>}
+            <span className="badge">📌 {contentType}</span>
+            <span className="badge">Faixa etária: {ageRating}</span>
+            {tone && <span className="badge">Tom: {tone}</span>}
+          </div>
+        </div>
       </div>
 
       {/* MÉTRICAS */}
       <div className="metrics">
         <div className="metric-card">
           <div className="metric-title">Curtidas</div>
-          <div className="metric-value">
-            {metrics?.likes?.toLocaleString() || 0}
-          </div>
+          <div className="metric-value">{metrics?.likes?.toLocaleString() || 0}</div>
         </div>
-
         <div className="metric-card">
           <div className="metric-title">Comentários</div>
-          <div className="metric-value">
-            {metrics?.comments?.toLocaleString() || 0}
-          </div>
+          <div className="metric-value">{metrics?.comments?.toLocaleString() || 0}</div>
         </div>
-
         <div className="metric-card">
           <div className="metric-title">Toxicidade</div>
-          <div className="metric-value">
+          <div className={`metric-value ${tox ? `tone-${tox}` : ""}`}>
             {toxicityScore === null ? "—" : `${toxicityScore.toFixed(1)}%`}
           </div>
+          {toxicityScore !== null && (
+            <div className="meter">
+              <span className={`tone-${tox}`} style={{ width: `${toxicityScore}%` }} />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* BADGES */}
-      <div
-        className="section"
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "10px",
-          justifyContent: "center",
-          marginTop: "20px",
-        }}
-      >
-        <span className="badge">⚠️ Risco: {String(harmClass).toUpperCase()}</span>
-        {viralClass && <span className="badge">🔥 {String(viralClass).toUpperCase()}</span>}
-        <span className="badge">📌 {contentType}</span>
-        <span className="badge">Faixa Etária: {ageRating}</span>
-        {tone && <span className="badge">Tom: {tone}</span>}
-      </div>
-
-      <hr style={{ border: "0", borderTop: "1px solid #f1f5f9", margin: "30px 0" }} />
-
-      {/* RESUMO DO POST */}
-      <div className="section" style={{ textAlign: "left", marginBottom: "24px" }}>
-        <h3 style={{ marginBottom: "8px", color: "#1e293b" }}>📌 Sobre o Post</h3>
-        <p style={{ color: "#475569", lineHeight: "1.6", margin: 0 }}>
-          {summaryText}
-        </p>
-      </div>
+      <hr className="divider" />
 
       {/* RELATÓRIO DE MODERAÇÃO */}
       <div className="section">
         <h3>📋 Relatório de Moderação</h3>
         <ul className="list">
-          {moderationList && moderationList.length > 0 ? (
+          {moderationList.length > 0 ? (
             moderationList.map((item, index) => (
               <li key={index} style={{ animationDelay: `${index * 0.1}s` }}>
                 {item}
@@ -96,16 +121,11 @@ export default function ResultCard({ data }) {
 
       {/* RECOMENDAÇÕES */}
       <div className="section">
-        <h3>Recomendações e Diretrizes</h3>
-        <ul className="list">
-          {recommendationsList && recommendationsList.length > 0 ? (
+        <h3>✅ Recomendações e Diretrizes</h3>
+        <ul className="list recs">
+          {recommendationsList.length > 0 ? (
             recommendationsList.map((item, index) => (
-              <li
-                key={index}
-                style={{
-                  animationDelay: `${((moderationList?.length || 0) + index) * 0.1}s`,
-                }}
-              >
+              <li key={index} style={{ animationDelay: `${(moderationList.length + index) * 0.1}s` }}>
                 {item}
               </li>
             ))

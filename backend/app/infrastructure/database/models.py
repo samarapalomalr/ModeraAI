@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime
-from app.database import Base
+from app.infrastructure.database.session import Base
 
 class Audit(Base):
     __tablename__ = "audits"
@@ -13,4 +13,15 @@ class Audit(Base):
     summary = Column(Text, nullable=True)
     compliance_score = Column(Integer, nullable=True)
     result_json = Column(Text, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(120), nullable=False)
+    email = Column(String(255), nullable=False, unique=True, index=True)
+    password_hash = Column(String(255), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)

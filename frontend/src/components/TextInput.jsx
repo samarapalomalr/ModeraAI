@@ -11,13 +11,8 @@ export default function TextInput({ onSubmit, loading, placeholder }) {
 
   return (
     <div className="card">
-      {/* MENSAGEM DE INSTRUÇÃO */}
-      <p className="subtitle" style={{ marginBottom: "12px", textAlign: "left" }}>
-        Cole o link do post da rede social que deseja analisar:
-      </p>
-
-      {/* FORMULÁRIO DE ENTRADA */}
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px" }}>
+      <p className="input-label">Cole o link do post que deseja analisar:</p>
+      <form onSubmit={handleSubmit} className="input-group">
         <input
           type="text"
           className="input"
@@ -25,9 +20,7 @@ export default function TextInput({ onSubmit, loading, placeholder }) {
           onChange={(e) => setValue(e.target.value)}
           placeholder={placeholder || "https://..."}
           required
-          style={{ flex: 1 }}
         />
-
         <button className="button" type="submit" disabled={loading || !value.trim()}>
           {loading ? "Analisando..." : "Analisar"}
         </button>
